@@ -113,6 +113,26 @@ ctx.EventManager().EmitEvents(sdk.Events{
 >In order to send transactions using IBC there are two different handshakes that must be performed. First there is a connection created between the two chains. Once the connection is created, an application specific channel handshake is performed which allows the transfer of application specific data. Examples of applications are token transfer, cross-chain validation, cross-chain accounts, and in this tutorial ibc-mock.
 
 为了使用IBC发送交易那么必须执行两种不同握手. 首先, 两个链之间建立了连接, 将执行特定于应用程序的通道握手, 从而可以传输特定于应用程序的数据.  应用程序示例包括令牌转移, 跨链验证, 跨链帐户以及本教程中的ibc-mock.
+
+connection在源码中以`ConnectionEnd`结构体表示, 其在源码中的定义:
+
+```go
+// ConnectionEnd defines a stateful object on a chain connected to another separate
+// one.
+// NOTE: there must only be 2 defined ConnectionEnds to stablish a connection
+// between two chains.
+type ConnectionEnd struct {
+    State State `json:"state" yaml:"state"`
+    ClientID string `json:"client_id" yaml:"client_id"`
+
+    // Counterparty chain associated with this connection.
+    Counterparty Counterparty `json:"counterparty" yaml:"counterparty"`
+    // Version is utilised to determine encodings or protocols for channels or
+    // packets utilising this connection.
+    Versions []string `json:"versions" yaml:"versions"`
+}
+```
+
 创建connection的命令:
 ```shell
 gaiacli \
@@ -146,25 +166,6 @@ connection create的流程:
 &emsp;1. 会做对client是否frozen的检查, 以及块高检查, client是否tendermint client检查(是否为同构链), 以及检查ibc0最新consensus state, 
 &emsp;2. 最后更新ibc1上的client: ibczeroclient的consensus state中的root, height以及nextvalidatorset字段(除了chain-id, 都更新到最新状态), 其状态为ibc0的最新consensus state状态, *奇怪的是打印却是ibconeclient更新*. 
 &emsp;3. 数据库更新client state和root状态.
-
-`ConnectionEnd`结构体在源码中的定义:
-
-```go
-// ConnectionEnd defines a stateful object on a chain connected to another separate
-// one.
-// NOTE: there must only be 2 defined ConnectionEnds to stablish a connection
-// between two chains.
-type ConnectionEnd struct {
-    State State `json:"state" yaml:"state"`
-    ClientID string `json:"client_id" yaml:"client_id"`
-
-    // Counterparty chain associated with this connection.
-    Counterparty Counterparty `json:"counterparty" yaml:"counterparty"`
-    // Version is utilised to determine encodings or protocols for channels or
-    // packets utilising this connection.
-    Versions []string `json:"versions" yaml:"versions"`
-}
-```
 * connection_open_try: 
 &emsp;1. 会做版本检查
 &emsp;2. 验证conection state
@@ -319,3 +320,217 @@ gaiacli --home ibc0/n0/gaiacli q ibc connection end connectionzero --indent --tr
 }
 ```
 
+## 操作三: Create Channel
+
+> A channel serves as a conduit for packets passing between a module on one chain and a module on another, ensuring that packets are executed only once, delivered in the order in which they were sent (if necessary), and delivered only to the corresponding module owning the other end of the channel on the destination chain.
+
+通道服务可以当做一个渠道使得消息可以从一条链上的模块传递给另一条链的模块, 确保这个包有且仅穿第一次, 并且准确按照发送的顺序进行传递(如有必要), 并且传递仅发生在分别拥有同一通道对应两端的链间对应模块之间.
+
+创建通道时需要指定通道是否为有序通道以及端口ID, 通道的源码结构:
+
+```go
+type Channel struct {
+	State          State        `json:"state" yaml:"state"`
+	Ordering       Order        `json:"ordering" yaml:"ordering"`
+	Counterparty   Counterparty `json:"counterparty" yaml:"counterparty"`
+	ConnectionHops []string     `json:"connection_hops" yaml:"connection_hops"`
+	Version        string       `json:"version" yaml:"version "`
+}
+
+// Counterparty defines the counterparty chain's channel and port identifiers
+type Counterparty struct {
+	PortID    string `json:"port_id" yaml:"port_id"`
+	ChannelID string `json:"channel_id" yaml:"channel_id"`
+}
+```
+
+创建channel的命令:
+
+```shell
+gaiacli tx ibc channel handshake [client-id] [port-id] [chan-id] [conn-id] [cp-client-id] [cp-port-id] [cp-chain-id] [cp-conn-id]
+gaiacli \
+  --home ibc0/n0/gaiacli \
+  tx ibc channel handshake \
+  ibconeclient bank chanshixianzhongnelzero connectionzero \
+  ibczeroclient bank channelone connectionone \
+  --node1 tcp://localhost:26657 \
+  --node2 tcp://localhost:26557 \
+  --chain-id2 ibc1 \
+  --from1 n0 --from2 n1
+```
+
+**bank**: 即为portID.
+
+\[cp-*\]: counterparty, 指代参与跨链的另一条链.
+
+Create Channel的流程, 与create connection类似, 有4种操作`channel_open_init`, `channel_open_try`, `channel_open_ack`, `channel_open_confirm`:
+
+* channel_open_init操作(ibc0): 
+  * 检查链上connection状态不为none
+  * 构建一个状态为init的channel
+  * 设置该ibc0上channel的发送与接收的sequence为1, 通过写数据库的形式
+* channel_open_try操作(ibc1):
+  * 检查链上connection状态是否为open
+  * 构建一个状态为opentry的channel
+  * 根据MsgChannelOpenTry.ProofInit验证channel信息与apphash是否正确
+  * 设置该ibc1上channel的发送与接收的sequence为1, 通过写数据库的形式
+* channel_open_ack操作(ibc0):
+  * 检查链上channel状态是否为init
+  * 检查链上connection状态是否为open
+  * 根据MsgChannelOpenAck.ProofTry验证channel信息与apphash是否正确
+  * 修改channel状态为open
+* channel_open_confirm操作(ibc1)
+  *  检查链上channel状态是否为opentry
+  *  检查链上connection状态是否为open
+  *  根据MsgChannelOpenConfirm.ProofAck验证channel信息与apphash是否正确
+  *  修改channel状态为open
+
+**4种操作之间必然也存在这update_client操作**, 该操作与创建connection过程中update_client操作完全一样.
+
+## 操作四: Packet
+
+包的结构:
+
+```go
+// Packet defines a type that carries data across different chains through IBC
+type Packet struct {
+	Sequence           uint64 `json:"sequence"`            // number corresponds to the order of sends and receives, where a Packet with an earlier sequence number must be sent and received before a Packet with a later sequence number.
+	Timeout            uint64 `json:"timeout"`             // indicates a consensus height on the destination chain after which the Packet will no longer be processed, and will instead count as having timed-out.
+	SourcePort         string `json:"source_port"`         // identifies the port on the sending chain.
+	SourceChannel      string `json:"source_channel"`      // identifies the channel end on the sending chain.
+	DestinationPort    string `json:"destination_port"`    // identifies the port on the receiving chain.
+	DestinationChannel string `json:"destination_channel"` // identifies the channel end on the receiving chain.
+	Data               []byte `json:"data"`                // opaque value which can be defined by the application logic of the associated modules.
+}
+```
+
+* `Sequence`: 序号, 与包在通道上的发送, 接收序列有关, 通道中的包依据序号大小, 有序发送与接收
+
+* `Timeout`: 超时, 表示目标链上的区块高度, 当超过该高度以后该包将不会被处理, 并会将其视为已超时
+
+* `SourcePort`: 源端口, 发送链上的端口
+
+* `SourceChannel`: 源通道, 发送链上的通道
+
+* `DestinationPort`: 目标端口, 目标链链上的端口
+
+* `DestinationChannel`: 目标通道, 目标链上的通道
+
+* `Data`: 数据, 数据与应用逻辑关联的模块相关
+
+### 包发送
+
+> To send a packet using the `bank` application protocol, you need to know the `channel` you plan to send on, as well as the `port` on the channel. You also need to provide an `address` and `amount`. Use the following command to send the packet:
+
+包发送用到了`bank`应用协议, 你需要知道你计划使用哪个通道来发送包, 以及该通道上端口. 你需要提供地址与金额.
+
+```shell
+gaiacli \
+  --home ibc0/n0/gaiacli \
+  tx ibc transfer transfer \
+  bank channelzero \
+  $(gaiacli --home ibc0/n0/gaiacli keys show n1 -a) 1stake \
+  --from n0 \
+  --source
+```
+
+该命令即会组装一个上文的`Packet`结构, 该结构中的`Data`字段:
+
+```json
+{
+    "amount":[
+        {
+            "denom":"bank/channelone/stake",
+            "amount":"1"
+        }
+    ],
+    "sender":"cosmos15dzt38uzufx0fhga3f373yveccla8he8mh6gmt",
+    "receiver":"cosmos1xax60gm9pfq3d5fcasymw0lx7cu3l3ee8q3esy",
+    "source":true
+}
+```
+
+`denom`说明了交易的token是跨链token. 值得一提的是, 源码实现中在发送端如果跨链token的发送链为原始链, token在发生跨链时会将token发送到escrowAddress 第三方保管地址, 如果跨链token的发送链不是原始链, 那么token在发生跨链时token将会被销毁. 
+
+### 包接收
+
+包发送后需要对目标链提交一笔含在发送链上发送包的接收交易, 才能完成接收链跨链token的接收.
+
+```shell
+gaiacli \
+  tx ibc transfer recv-packet \
+  bank channelzero ibczeroclient \
+  --home ibc1/n0/gaiacli \
+  --packet-sequence 1 \
+  --timeout $TIMEOUT \
+  --from n1 \
+  --node2 tcp://localhost:26657 \
+  --chain-id2 ibc0 \
+  --source
+```
+
+值得一说的是, 源码实现中会需要一个账户, 并且该账户需要具备铸币与销币的权限, 也就是说目标链接收token过程, 实际上是接收包的交易校验通过以后, 由该特殊账户铸币产生相应的跨链币后转账到对应账户中, 之后需要发送出去的时候, 作销币操作.
+
+#### before ibc
+
+查询账户余额:
+
+```json
+{
+    "type":"cosmos-sdk/Account",
+    "value":{
+        "address":"cosmos1vgu8e3vchsnztlepzutpxwsf8p7c27awdx9xmj",
+        "coins":[
+            {
+                "denom":"n0token",
+                "amount":"1000000000"
+            },
+            {
+                "denom":"stake",
+                "amount":"400000000"
+            }
+        ],
+        "public_key":{
+            "type":"tendermint/PubKeySecp256k1",
+            "value":"Ah9M7XPQIrjniXpghE3+bWeLG/0Phck58aqS/gQQjmxY"
+        },
+        "account_number":"3",
+        "sequence":"10"
+    }
+}
+```
+
+#### after ibc
+
+再次查询账户查询余额:
+
+```json
+{
+    "type":"cosmos-sdk/Account",
+    "value":{
+        "address":"cosmos1vgu8e3vchsnztlepzutpxwsf8p7c27awdx9xmj",
+        "coins":[
+            {
+                "denom":"bank/channelone/stake",
+                "amount":"1"
+            },
+            {
+                "denom":"n0token",
+                "amount":"1000000000"
+            },
+            {
+                "denom":"stake",
+                "amount":"400000000"
+            }
+        ],
+        "public_key":{
+            "type":"tendermint/PubKeySecp256k1",
+            "value":"Ah9M7XPQIrjniXpghE3+bWeLG/0Phck58aqS/gQQjmxY"
+        },
+        "account_number":"3",
+        "sequence":"12"
+    }
+}
+```
+
+增加了该项**"denom":"bank/channelone/stake"**, 并且数量为1, 与实际发送一致, 说明至此跨链操作完成.

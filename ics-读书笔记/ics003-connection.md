@@ -54,7 +54,7 @@ IBC核心协议为包提供授权和排序语意: 分别保证包在发送链上
 
 ICS定义了两种数据结构`ConnectionState`和`ConnectionEnd`:
 
-```js
+```typescript
 enum ConnectionState {
     INIT,
     TRYOPEN,
@@ -97,7 +97,7 @@ type Counterparty struct {
 ```
 
 规范还涉及到对于跨链双链间验证的函数规范定义:
-```js
+```typescript
 function verifyClientConsensusState(
   connection: ConnectionEnd,
   height: uint64,
@@ -197,7 +197,7 @@ This sub-protocol need not be permissioned, modulo anti-spam measures.
 
 下面我们来看下ics002规定的4种数据报: `ConnOpenInit`, `ConnOpenTry`, `ConnOpenAck`, `ConnOpenConfirm`.
 首先是`ConnOpenInit`初始化了一个新的connection在链A上., 下面是其规范中定义的伪代码:
-```js
+```typescript
 function connOpenInit(
   identifier: Identifier,
   desiredCounterpartyConnectionIdentifier: Identifier,
@@ -246,7 +246,7 @@ func (k Keeper) ConnOpenInit(
 显然伪码中的一个验证函数**abortTransactionUnless(validateConnectionIdentifier(identifier))**在源码中并未实现, **validateConnectionIdentifier**该验证函数在上文中也有提到. `ConnectionEnd`结构体上文也有展开
 `ConnOpenTry`中继发起链到目标链的连接尝试通知(改代码在目标链上执行), 规范中的伪代码定义如下:
 
-```js
+```typescript
 function connOpenTry(
   desiredIdentifier: Identifier,
   counterpartyConnectionIdentifier: Identifier,
@@ -375,7 +375,7 @@ func (k Keeper) ConnOpenTry(
 }
 ```
 从命名上就能看出源码中尚有与consensus state相关的验证被注释掉了,  *应该与ibc不仅仅满足异构链跨链有关, consensus state proof相关的部分也并未实际运用*,  不过却有connection state相关的验证, 这块验证内容会在[最后讲到](#验证函数), 未实现的伪码:
-```js
+```typescript
 abortTransactionUnless(connection.verifyConnectionState(proofHeight, proofInit, counterpartyConnectionIdentifier, expected))
 abortTransactionUnless(connection.verifyClientConsensusState(proofHeight, proofConsensus, counterpartyClientIdentifier, expectedConsensusState))
 previous = provableStore.get(connectionPath(desiredIdentifier))
@@ -421,7 +421,7 @@ function connOpenAck(
 func (k Keeper) ConnOpenAck(
     ctx sdk.Context,
     connectionID string,
-    version string,
+    version string,.
     proofTry commitment.ProofI,
     proofConsensus commitment.ProofI,
     proofHeight uint64,
@@ -496,12 +496,12 @@ func (k Keeper) ConnOpenAck(
     connection.Versions = []string{version}
     k.SetConnection(ctx, connectionID, connection)
     k.Logger(ctx).Info(fmt.Sprintf("connection %s state updated: INIT -> OPEN ", connectionID))
-    return nil
+    return nil.
 }
 ```
 很显然`connOpenAck`验证consensus state部分的函数也被注释掉了
 最后再来看`connOpenConfirm`函数, `connOpenConfirm`确认链A上对链B开启了接连, 函数执行完成后两条链上的连接都会被开启(该函数会在链B上实现), 其伪代码实现:
-```js
+```typescript
 function connOpenConfirm(
   identifier: Identifier,
   proofAck: CommitmentProof,
@@ -530,7 +530,7 @@ func (k Keeper) ConnOpenConfirm(
     if !found {
         return sdkerrors.Wrap(types.ErrConnectionNotFound(k.codespace, connectionID), "cannot relay ACK of open attempt")
     }
-
+.
     if connection.State != types.TRYOPEN {
         return types.ErrInvalidConnectionState(
             k.codespace,
@@ -561,9 +561,10 @@ func (k Keeper) ConnOpenConfirm(
     return nil
 }
 ```
-###验证函数
+### 验证函数
 验证函数`VerifyMembership`需要注册proof的decode信息, 目前注册了四种decoder, 分别为`SimpleValue`, `IAVLValue`, `IAVLAbsence`, `MultiStoreProof`, 目前我们会用的为`IAVLValue`和
 `MultiStoreProof`两种, 注册源码如下:
+
 ```go
 // XXX: This should be managed by the rootMultiStore which may want to register
 // more proof ops?

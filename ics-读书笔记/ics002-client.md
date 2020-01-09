@@ -8,7 +8,7 @@ alice作为一台机器上的一个module, 想要将bo(第二台机器上的第�
 
 实现IBC协议的状态机可以支持任意的客户端的成员, 并且每一种客户端都可以被不同的初始共识状态初始化以用来追踪不同共识的实例. 为了在两个机器集群间建立connection连接(ICS 3), 一方机器集群必须支持另一方拥有不同共识算法的机器集群对应的客户端.
 >Consensus is a Header generating function which takes the previous ConsensusState with the messages and returns the result.
-```
+```typescript
 type Consensus = (ConsensusState, [Message]) => Header
 ```
 这显然是跨链协议中两条链互相同步对方的关键操作, ConsensusState是以往收到的另一条链的状态, *[Messge]数组为以往状态到当前状态间发生的交易*, 通过这两个参数, 我们可以相信至少平行链具备互相校验的能力, 然而查阅源码却没找到函数的原型, 能看到一个如下接口:
@@ -26,7 +26,7 @@ type Blockchain interface {
 
 但很可惜没有实现Blockchain接口的结构体, 相信还在开发中.
 在client update过程中有一个关键函数:
-```
+```typescript
 type checkValidityAndUpdateState = (Header) => Void
 ```
 >If the provided header was valid, the client MUST also mutate internal state to store now-finalised consensus roots and update any necessary signature authority tracking (e.g. changes to the validator set) for future calls to the validity predicate.
@@ -134,7 +134,7 @@ VerifyFutureCommit()函数方能通过, 之后更新client的ConsensusState状�
 使用过去的roots: 为了避免client更新状态(区块高度增长, 会影响到根状态)和携带证明的交易握手过程或包接收过程之间存在的竞态, 很多IBC的处理函数会允许调用者指定特定高度的根状态作为参考. IBC处理函数必须确保他们对调用者传入的高度执行了必要的检查, 以保证逻辑的正确性.
 
 ## Create Client的伪代码
-```
+```typescript
 function createClient(
   id: Identifier,
   clientType: ClientType,
@@ -175,7 +175,7 @@ func (k Keeper) CreateClient(
 ```
 **k.SetVerifiedRoot(ctx, clientID, consensusState.GetHeight(), consensusState.GetRoot())似乎未出现在伪代码中**, *是不是忘了?*
 ## Update Client的伪代码
-```
+```typescript
 function updateClient(
   id: Identifier,
 verifyMembership
