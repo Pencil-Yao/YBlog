@@ -1,3 +1,5 @@
+该repository作为本人读书笔记, 记录知识的获取, 以blog的形式记录下来. 该文库我会不断更新, 如果喜欢的话麻烦点一下`star`.
+
 文章由[https://studygolang.com/articles/5837](https://studygolang.com/articles/5837)启发, 进行展开发散.
 利用reflect包对struct结构进行遍历, 对于学习golang有很大的帮助:
 完整测试代码如下, 可以用以输出完整的struct成员, 增加递归函数可以很容易的做到多种类型输出:
