@@ -348,7 +348,7 @@ sync.Map的机制正是优先检索线程安全的read map, 如果read map查找
 
 ![](./sync.Map-Store.png)
 
-### load
+#### load
 
 ![](./sync.Map-Load.png)
 

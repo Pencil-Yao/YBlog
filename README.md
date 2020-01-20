@@ -6,7 +6,7 @@
 | projects | Article |
 | :------ | :----- |
 | Go | [struct结构体遍历方法](./golang学习笔记/struct结构体遍历方法.md)<br>[slice分析](./golang学习笔记/slice分析.md)<br>[map分析](./golang学习笔记/map分析.md)<br>[map线程安全](./golang学习笔记/map线程安全.md)|
-| COSMOS-IBC | [ibc源码](./ics-读书笔记/ibc源码.md)<br>[ics002-client](./ics-读书笔记/ics002-client.md)<br>[ics003-connection](./ics-读书笔记/ics003-connection.md)<br>[ics004-channel&packet](./ics-读书笔记/ics004-channel&packet)<br>[ics005-port-allocation](./ics-读书笔记/ics005-port-allocation)|
+| COSMOS-IBC | [ibc源码](./ics-读书笔记/ibc源码.md)<br>[ics002-client](./ics-读书笔记/ics002-client.md)<br>[ics003-connection](./ics-读书笔记/ics003-connection.md)<br>[ics004-channel&packet](./ics-读书笔记/ics004-channel&packet.md)<br>[ics005-port-allocation](./ics-读书笔记/ics005-port-allocation.md) |
 | Consense(tendermint-related) | [PBFT随笔](./tendermint/PBFT随笔.md)<br>[tendermint-consensus](./tendermint/tendermint_consensus.md) |
 
 ### :copyright:转载
