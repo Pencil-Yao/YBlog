@@ -1,5 +1,11 @@
 本文为tendermint paper: [The latest gossip on BFT consensus](https://www.researchgate.net/publication/326412260_The_latest_gossip_on_BFT_consensus)的读书笔记, 本文旨在理清论文中所讲的BFT共识. 如果您在阅读过程中有任何意见可以发起ISSUE, 如果喜欢的话可以点击`star`.
 
+## 摘要
+
+>The paper presents Tendermint, a new protocol for ordering events in a distributed network under adversarial conditions. More commonly known as Byzantine Fault Tolerant (BFT) consensus or atomic broadcast, the problem has attracted significant attention in recent years due to the widespread success of blockchain-based digital currencies, such as Bitcoin and Ethereum, which successfully solved the problem in a public setting without a central authority. Tendermint modernizes classic academic work on the subject and simplifies the design of the BFT algorithm by relying on a peer-to-peer gossip protocol among nodes.
+
+本文介绍Tendermint, 一种在对抗的分布式网络环境下处理有序事件的协议. 更普遍的将其认知为拜占庭容错或原子广播, 该难题在最近几年由于基于区块链的数字货币, 例如, 比特币, 以太坊而受到大量的关注, 这些数字货币解决了再去中心化环境下建立可信公开环境. Tendermint协议将过去经典的学术工作做了现代化的改进并基于点对点的gossip协议简化BFT算法.
+
 ## 引言
 
 >Consensus is one of the most fundamental problems in distributed computing. It is important because of it’s role in State Machine Replication (SMR), a generic approach for replicating services that can be modeled as a deterministic state machine [1], [2]. The key idea of this approach is that service replicas start in the same initial state, and then execute requests (also called transactions) in the same order; thereby guaranteeing that replicas stay in sync with each other. The role of consensus in the SMR approach is ensuring that all replicas receive transactions in the same order. Traditionally, deployments of SMR based systems are in data-center settings (local area network), have a small number of replicas (three to seven) and are typically part of a single administration domain (e.g., Chubby [3]); therefore they handle benign (crash) failures only, as more general forms of failure (in particular, malicious or Byzantine faults) are considered to occur with only negligible probability.
