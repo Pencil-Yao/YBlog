@@ -34,4 +34,5 @@ The description so far has mainly addressed how to get the S and N in “SNARKs�
 
 1. [同态隐藏(Homomorphic Hidings)](./Homomorphic_Hidings.md)
 2. [多项式的盲估计(Blind Evaluation of Polynomials)](./Blind_Evaluation_of_Polynomials.md)
+3. [系数测试和假设知识](./The_Knowledge_of_Coefficient_Test_and_Assumption.md)
 

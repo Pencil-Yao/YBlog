@@ -53,4 +53,34 @@ Suppose Alice has a polynomial P of degree d, and Bob has a point s∈Fp that he
 - Alice sends P to Bob, and he computes E(P(s)) by himself.
 - Bob sends s to Alice; she computes E(P(s)) and sends it to Bob.
 
-:book: 一种是Alice发送多项式P给Bob, 由他自己计算出E(P(s)); 另一种
+:book: 一种是Alice发送多项式P给Bob, 由他自己计算出E(P(s)); 另一种是Bob发送s给Alice;她计算出了E(P(s)),并将值传给Bob.
+
+However, in the *blind evaluation problem* we want Bob to learn E(P(s)) without learning P – which precludes the first option; and, most importantly, we don’t want Alice to learn s, which rules out the second [[1\]]((#[1])).
+
+:book: 然而在盲估中我们希望Bop在不知道P的情况下知道E(P(s)) - 这样排除了方案1; 而且更重要的是, 我们也不想要让Alice知道s, 因此排除了方案2.
+
+Using HH, we can perform blind evaluation as follows.
+
+1. Bob sends to Alice the hidings E(1),E(s),…,E(s^d).
+2. Alice computes E(P(s)) from the elements sent in the first step, and sends E(P(s)) to Bob. (Alice can do this since E supports linear combinations, and P(s) is a linear combination of 1,s,…,s^d.)
+
+Note that, as only hidings were sent, neither Alice learned ss [[2\]](https://electriccoin.co/blog/snark-explain2/#id5), nor Bob learned P.
+
+:book: 使用同态隐藏, 我们能够执行以下估计:
+
+1. Bob发送Alice隐藏值: E(1),E(s),…,E(sd).
+2. Alice从第一步中计算E(P(s)), 然后发送E(P(s))给Bob. (Alice能够做到因为E具备现行组合, 而P(s)正是1,s,…,s^d的线性组合.)
+
+Subsequent posts will go into more detail as to how blind evaluation is used in SNARKs. The rough intuition is that the verifier has a “correct” polynomial in mind, and wishes to check the prover knows it. Making the prover blindly evaluate their polynomial at a random point not known to them, ensures the prover will give the wrong answer with high probability if their polynomial is not the correct one. This, in turn, relies on the Schwartz-Zippel Lemma stating that “different polynomials are different at most points”.
+
+:book: 一系列的文档将会深入介绍盲估计在SNARKs中的应用. 一个简单的情景: 验证人有一个正确的多项式, 并希望检查验证人是知道该多项式的. 让证明者在他们不知道的随机点上盲目评估他们的多项式，确保如果他们的多项式不正确，证明者将很可能给出错误的答案。反过来, 这依赖于Schwartz-Zippel Lemma所指出的"不同的多项式在大多数点是不同的".
+
+## Appendix
+
+##### [1] The main reason we don’t want to send P to Bob, is simply that it is large – (d+1) elements, where, for example, d~2000000 in the current Zcash protocol; this ultimately has to do with the “Succinct” part of SNARKs. It is true that the sequence of hidings Bob is sending to Alice above is just as long, but it will turn out this sequence can be “hard-coded” in the parameters of the system, whereas Alice’s message will be different for each SNARK proof.
+
+:book: 我们不希望发送P给Bob的主要原因是, 多项式P非常大有(d+1)个元素, 然而在Zcash的协议中d大约为2000000, 这最终会影响到SNARKs的简短. 的确, 上文Bob发送给Alice隐藏序列也会一样长, 但事实说明在系统参数中这可以进行"硬编码", 而对于每个SNARK证明, Alice的消息都会有所不同.
+
+##### [2] Actually, the hiding property only guarantees s not being recoverable from E(s), but here we want to claim it is also not recoverable from the sequence E(s),…,E(s^d) that potentially contains more information about s. This follows from the d-power Diffie-Hellman assumption, which is needed in several SNARK security proofs.
+
+:book: 事实上, 隐藏属性是保证无法重E(s)倒推出s, 但是我们想要说明从E(s),…,E(s^d)恢复信息s同样是做不到的. 这结论来源于d阶Diffie-Hellman假设, 该假设用于一些SNARK的安全证明中.
