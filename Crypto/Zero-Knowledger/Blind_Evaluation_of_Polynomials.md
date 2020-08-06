@@ -36,3 +36,21 @@ For someone that knows P, the value P(s) is a *linear combination* of the values
 
 :book: 对于有人知道多项式P, P(s)的值是一个1,s,…,s^d的线性组合, 在这里线性组合以为权值加法, 在P(s)的例子中a0,…,ad是权值.
 
+In the last post, we saw the HH E defined by E(x)=g^x where g was a generator of a group with a hard discrete log problem. We mentioned that this HH “supports addition” in the sense that E(x+y) can be computed from E(x) and E(y). We note here that it also “supports linear combinations”; meaning that, given a,b,E(x),E(y) we can compute E(ax+by). This is simply because
+
+E(ax+by)=g^(ax+by)=g^ax⋅g^by=(g^x)a⋅(g^y)b=E(x)^a⋅E(y)^b.
+
+:book: 在上一篇文档, 我们提到了同态隐藏支持加法从某种意义上说E(x+y)能够从E(x)和E(y)计算得到. 我们注意到同态隐藏也"支持线性组合"; 意味着提供a,b,E(x),E(y)我们能够计算E(ax+by):
+
+E(ax+by)=g^(ax+by)=g^ax⋅g^by=(g^x)a⋅(g^y)b=E(x)^a⋅E(y)^b.
+
+### Blind evaluation of a polynomial
+
+Suppose Alice has a polynomial P of degree d, and Bob has a point s∈Fp that he chose randomly. Bob wishes to learn E(P(s)), i.e., the HH of the evaluation of P at s. Two simple ways to do this are:
+
+:book: 假设Alice拥有一个d阶多项式P, 而Bob在Fp域上随机选择一个点s. Bob想要知道E(P(s))的值, 例如P在s的估计值的同态隐藏值. 有两个简单的方法来实施:
+
+- Alice sends P to Bob, and he computes E(P(s)) by himself.
+- Bob sends s to Alice; she computes E(P(s)) and sends it to Bob.
+
+:book: 一种是Alice发送多项式P给Bob, 由他自己计算出E(P(s)); 另一种
