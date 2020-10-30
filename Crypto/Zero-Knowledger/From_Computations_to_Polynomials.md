@@ -1,0 +1,91 @@
+该repository作为本人读书笔记, 记录知识的获取, 以blog的形式记录下来. 该文库我会不断更新, 如果喜欢的话麻烦点一下`star`. 
+
+# From Computations to Polynomials
+
+[<<part IV](./How_to_make_Blind_Evaluation_of_Polynomials_Verifiable.md)
+
+In this post we explain the translation into *Quadratic Arithmetic Program*(QAPs) by example. Even when focusing on a small example rather than the general definition, it is unavoidable that it is a lot to digest at first, so be prepared for a certain mental effort :).
+
+:book: 在这篇文章中我们将通过例子介绍二进制运算程序的转换. 即使只关注一个小的例子而不是一般性的定义，也不可避免地需要一开始就进行大量的消化，因此请做好一定的心理准备​ :slightly_smiling_face:.
+
+Suppose Alice wants to prove to Bob she knows ![](https://latex.codecogs.com/gif.latex?c_1,c_2,c_3 \in \mathbb{F}_p) such that ![](https://latex.codecogs.com/gif.latex?(c_1\cdot c_2)\cdot (c_1 + c_3) = 7). The first step is to present the expression computed from ![](https://latex.codecogs.com/gif.latex?c1,c2,c3) as an *arithmetic circuit*.
+
+:book: 假设 Alice 想要向 Bob 证明她知道 ![](https://latex.codecogs.com/gif.latex?c_1,c_2,c_3 \in \mathbb{F}_p) 满足 ![](https://latex.codecogs.com/gif.latex?(c_1\cdot c_2)\cdot (c_1 + c_3) = 7). 第一步需要提供由 ![](https://latex.codecogs.com/gif.latex?c1,c2,c3) 计算出得表达式作为运算电路.
+
+### Arithmetic circuits
+
+An arithmetic circuit consists of gates computing arithmetic operations like addition and multiplication, with wires connecting the gates. In our case, the circuit looks like this:
+
+:book: 运算电路包含乘法与加法的门电路运算, 使用线连接各个门. 在我们的例子中该电路类似:
+
+![](../images/CircuitDrawing-1-480x387.png)
+
+A *legal assignment* for the circuit, is an assignment of values to the labeled wires where the output value of each multiplication gate is indeed the product of the corresponding inputs.
+
+:book: 合法的电路分配是将值分配给标记的导线，其中每个乘法门的输出值确实是相应输入的乘积。
+
+### Reduction to a QAP
+
+We associate each multiplication gate with a field element: ![](https://latex.codecogs.com/gif.latex?\mathsf{g_1}) will be associated with ![](https://latex.codecogs.com/gif.latex?1\in\mathbb{F}_p) and ![](https://latex.codecogs.com/gif.latex?\mathsf{g_2}) with ![](https://latex.codecogs.com/gif.latex?2\in\mathbb{F}_p). We call the points ![](https://latex.codecogs.com/gif.latex?\{1,2\}) our *target points*. Now we need to define a set of “left wire polynomials” ![](https://latex.codecogs.com/gif.latex?L_1,\ldots,L_5), “right wire polynomials” ![](https://latex.codecogs.com/gif.latex?R_1,\ldots,R_5) and “output wire polynomials” ![](https://latex.codecogs.com/gif.latex?O_1,\ldots,O_5).
+
+:book: 我们关联乘法门一个字段元素: ![](https://latex.codecogs.com/gif.latex?\mathsf{g_1}) 被赋予了 ![](https://latex.codecogs.com/gif.latex?1\in\mathbb{F}_p) 而 ![](https://latex.codecogs.com/gif.latex?\mathsf{g_2}) 被赋予了 ![](https://latex.codecogs.com/gif.latex?2\in\mathbb{F}_p). 我们称点 ![](https://latex.codecogs.com/gif.latex?\{1,2\}) 为我们的目标点. 现在我们定义左线多项式 ![](https://latex.codecogs.com/gif.latex?L_1,\ldots,L_5) 和右线多项式 ![](https://latex.codecogs.com/gif.latex?R_1,\ldots,R_5) 以及输出多项式 ![](https://latex.codecogs.com/gif.latex?O_1,\ldots,O_5).
+
+The idea for the definition is that the polynomials will usually be zero on the target points, except the ones involved in the target point’s corresponding multiplication gate.
+
+:book: 以如此想法定义多项式在目标点大多为 0, 除了目标点对应的乘法门中涉及的那些.
+
+Concretely, as ![](https://latex.codecogs.com/gif.latex?\mathsf{w_1}),![](https://latex.codecogs.com/gif.latex?\mathsf{w_2}),![](https://latex.codecogs.com/gif.latex?\mathsf{w_4}) are, respectively, the left, right and output wire of ![](https://latex.codecogs.com/gif.latex?\mathsf{g_1}); we define ![](https://latex.codecogs.com/gif.latex?L_1=R_2=O_4=2-X), as the polynomial ![](https://latex.codecogs.com/gif.latex?2-X) is one on the point 1 corresponding to ![](https://latex.codecogs.com/gif.latex?\mathsf{g_1}) and zero on the point 2 corresponding to ![](https://latex.codecogs.com/gif.latex?\mathsf{g_2}).
+
+:book: 具体地说, 对于 ![](https://latex.codecogs.com/gif.latex?\mathsf{w_1}),![](https://latex.codecogs.com/gif.latex?\mathsf{w_2}),![](https://latex.codecogs.com/gif.latex?\mathsf{w_4}) 来说, 分别对应 ![](https://latex.codecogs.com/gif.latex?\mathsf{g_1}) 的左输入线, 右输入线和输出线; 我们定义 ![](https://latex.codecogs.com/gif.latex?L_1=R_2=O_4=2-X), 作为多项式 ![](https://latex.codecogs.com/gif.latex?2-X) 在点 1 为 1 对应 ![](https://latex.codecogs.com/gif.latex?\mathsf{g_1}) 而且再点 2 为 0 对应 ![](https://latex.codecogs.com/gif.latex?\mathsf{g_2}).
+
+Note that ![](https://latex.codecogs.com/gif.latex?\mathsf{w_1}) and ![](https://latex.codecogs.com/gif.latex?\mathsf{w_3}) are *both* right inputs of![](https://latex.codecogs.com/gif.latex?\mathsf{g_2}). Therefore, we define similarly ![](https://latex.codecogs.com/gif.latex?L_4=R_1=R_3=O_5=X-1) as ![](https://latex.codecogs.com/gif.latex?X-1) is one on the target point 2 corresponding to ![](https://latex.codecogs.com/gif.latex?\mathsf{g_2}) and zero on the other target point. We set the rest of the polynomials to be the zero polynomial.
+
+:book: 注意到 ![](https://latex.codecogs.com/gif.latex?\mathsf{w_1}) 和 ![](https://latex.codecogs.com/gif.latex?\mathsf{w_3}) 是 ![](https://latex.codecogs.com/gif.latex?\mathsf{g_2}) 的右输入. 因此我们同样定义 ![](https://latex.codecogs.com/gif.latex?L_4=R_1=R_3=O_5=X-1) 同时 ![](https://latex.codecogs.com/gif.latex?X-1) 在点 2 为 1 对应与 ![](https://latex.codecogs.com/gif.latex?\mathsf{g_2}) 而且在其他点为 0. 其余多项式的值我们设为0.
+
+Given fixed values ![](https://latex.codecogs.com/gif.latex?(c_1,\ldots,c_5)) we use them as coefficients to define a left, right, and output “sum” polynomials. That is, we define
+
+![](https://latex.codecogs.com/gif.latex?L:=\sum_{i=1}^5 c_i\cdot L_i, R:=\sum_{i=1}^5 c_i\cdot R_i, O:=\sum_{i=1}^5 c_i\cdot O_i)
+
+and then we define the polynomia ![](https://latex.codecogs.com/gif.latex?P:=L\cdot R -O)
+
+:book: 给予固定的值 ![](https://latex.codecogs.com/gif.latex?(c_1,\ldots,c_5)) 我们将其作为系数来用于定义左, 右, 输出多项式. 因此, 我们定义:
+
+![](https://latex.codecogs.com/gif.latex?L:=\sum_{i=1}^5 c_i\cdot L_i, R:=\sum_{i=1}^5 c_i\cdot R_i, O:=\sum_{i=1}^5 c_i\cdot O_i)
+
+并且我们定义多项式 ![](https://latex.codecogs.com/gif.latex?P:=L\cdot R -O)
+
+Now, after all these definitions, the central point is this: ![](https://latex.codecogs.com/gif.latex?(c_1,\ldots,c_5)) *is a legal assignment to the circuit if and only if* ![](https://latex.codecogs.com/gif.latex?P) *vanishes on all the target points*.
+
+现在, 在所有定义之后, 其中心点是: 当且只有 ![](https://latex.codecogs.com/gif.latex?P) 在所有目标点上为 0 时, ![](https://latex.codecogs.com/gif.latex?(c_1,\ldots,c_5)) 才算是合法赋值.
+
+Let’s examine this using our example. Suppose we defined ![](https://latex.codecogs.com/gif.latex?L,R,O,P) as above given some ![](https://latex.codecogs.com/gif.latex?(c_1,\ldots,c_5)). Let’s evaluate all these polynomials at the target point 1:
+
+让我们用们的例子来举例. 假设我们用以上给出的 ![](https://latex.codecogs.com/gif.latex?(c_1,\ldots,c_5)) 来定义 ![](https://latex.codecogs.com/gif.latex?L,R,O,P). 让我们推导点 1 的多项式:
+
+Out of all the ![](https://latex.codecogs.com/gif.latex?L_i)'s only ![](https://latex.codecogs.com/gif.latex?L_1) is non-zero on 1. So we have ![](https://latex.codecogs.com/gif.latex?L(1)=c_1\cdot L_1(1)=c_1). Similarly, we get ![](https://latex.codecogs.com/gif.latex?R(1)=c_2) and ![](https://latex.codecogs.com/gif.latex?O(1)=c_4).
+
+所有 ![](https://latex.codecogs.com/gif.latex?L_i) 的输出只有 ![](https://latex.codecogs.com/gif.latex?L_1) 在点 1 非 0. 所以我们定义 ![](https://latex.codecogs.com/gif.latex?L(1)=c_1\cdot L_1(1)=c_1). 同理我们得到了 ![](https://latex.codecogs.com/gif.latex?R(1)=c_2) 和 ![](https://latex.codecogs.com/gif.latex?O(1)=c_4).
+
+Therefore, ![](https://latex.codecogs.com/gif.latex?P(1)=c_1\cdot c_2-c_4). A similar calculation shows ![](https://latex.codecogs.com/gif.latex?P(2)=c_4\cdot (c_1+c_3) - c_5).
+
+因此, ![](https://latex.codecogs.com/gif.latex?P(1)=c_1\cdot c_2-c_4). 同样的公式表示 ![](https://latex.codecogs.com/gif.latex?P(2)=c_4\cdot (c_1+c_3) - c_5).
+
+Defining the *target polynomial* ![](https://latex.codecogs.com/gif.latex?T(X):=(X-1)\cdot (X-2)), we thus have that ![](https://latex.codecogs.com/gif.latex?T) divides ![](https://latex.codecogs.com/gif.latex?P) if and only if ![](https://latex.codecogs.com/gif.latex?(c_1,\ldots,c_5)) is a legal assignment.
+
+定义目标多项式  ![](https://latex.codecogs.com/gif.latex?T(X):=(X-1)\cdot (X-2)), 在 ![](https://latex.codecogs.com/gif.latex?(c_1,\ldots,c_5)) 是合法赋值时, 我们得到了 ![](https://latex.codecogs.com/gif.latex?T) 除以 ![](https://latex.codecogs.com/gif.latex?P).
+
+Following the above discussion, we define a QAP as follows:
+
+跟着之前的讨论, 我们定义 QAP 如下:
+
+*A Quadratic Arithmetic Program* ![](https://latex.codecogs.com/gif.latex?Q) *of degree* ![](https://latex.codecogs.com/gif.latex?d) *and size* ![](https://latex.codecogs.com/gif.latex?m) *consists of polynomials* ![](https://latex.codecogs.com/gif.latex?L_1,\ldots,L_m), ![](https://latex.codecogs.com/gif.latex?R_1,\ldots,R_m), ![](https://latex.codecogs.com/gif.latex?O_1,\ldots,O_m) *and a target polynomial* ![](https://latex.codecogs.com/gif.latex?T) *of degree* ![](https://latex.codecogs.com/gif.latex?d).
+
+一个四则运算程序 ![](https://latex.codecogs.com/gif.latex?Q): 有 ![](https://latex.codecogs.com/gif.latex?d) 阶, ![](https://latex.codecogs.com/gif.latex?m) 元多项式 ![](https://latex.codecogs.com/gif.latex?L_1,\ldots,L_m) 和 ![](https://latex.codecogs.com/gif.latex?d) 阶多项式 ![](https://latex.codecogs.com/gif.latex?T).
+
+*An assignment* ![](https://latex.codecogs.com/gif.latex?(c_1,\ldots,c_m)) *satisfies* ![](https://latex.codecogs.com/gif.latex?Q) *if, defining* ![](https://latex.codecogs.com/gif.latex?L:=\sum_{i=1}^m c_i\cdot L_i, R:=\sum_{i=1}^m c_i\cdot R_i, O:=\sum_{i=1}^m c_i\cdot O_i), *we have that* ![](https://latex.codecogs.com/gif.latex?T) *divides* ![](https://latex.codecogs.com/gif.latex?P).
+
+赋值 ![](https://latex.codecogs.com/gif.latex?(c_1,\ldots,c_m)) 满足 ![](https://latex.codecogs.com/gif.latex?Q), 需要定义 ![](https://latex.codecogs.com/gif.latex?L:=\sum_{i=1}^m c_i\cdot L_i, R:=\sum_{i=1}^m c_i\cdot R_i, O:=\sum_{i=1}^m c_i\cdot O_i) 以及我们得到 ![](https://latex.codecogs.com/gif.latex?T) 除以 ![](https://latex.codecogs.com/gif.latex?P).
+
+To summarize, we have seen how a statement such as “I know ![](https://latex.codecogs.com/gif.latex?c_1,c_2,c_3) such that ![](https://latex.codecogs.com/gif.latex?(c_1\cdot c_2)\cdot (c_1 + c_3) = 7)” can be translated into an equivalent statement about polynomials using QAPs. In the next part, we will see an efficient protocol for proving knowledge of a satisfying assignment to a QAP.
+
+总结全文, 我们明白了对于状态(例如"我知道一组 ![](https://latex.codecogs.com/gif.latex?c_1,c_2,c_3) 满足多项式 ![](https://latex.codecogs.com/gif.latex?(c_1\cdot c_2)\cdot (c_1 + c_3) = 7)") 能够被转化为多项式满足 QAPs 的对等状态. 下一篇文章, 我们讲明白一种高效的协议证明知道赋值满足一个 QAP.

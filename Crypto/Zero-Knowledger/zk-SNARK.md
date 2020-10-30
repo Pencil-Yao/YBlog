@@ -28,11 +28,24 @@ If the prover knew in advance which point the verifier would choose to check, th
 
 The description so far has mainly addressed how to get the S and N in “SNARKs” — how to get a short, non-interactive, single message proof — but hasn’t addressed the “zk” (zero-knowledge) part which allows the prover to maintain the confidentiality of their secret inputs. It turns out that at this stage, the “zk” part can be easily added by having the prover use “random shifts” of the original polynomials that still satisfy the required identity.
 
+For a step-by-step, in-depth explanation of key concepts behind zk-SNARKs in Zcash, see our SNARKs Explainer series with posts on:
+
+1. [Homomorphic Hiding](./Homomorphic_Hidings.md)
+2. [Blind Evaluation of Polynomials](./Blind_Evaluation_of_Polynomials.md)
+3. [The Knowledge of Coefficient Test and Assumption](./The_Knowledge_of_Coefficient_Test_and_Assumption.md)
+4. [How to make Blind Evaluation of Polynomials Verifiable](./How_to_make_Blind_Evaluation_of_Polynomials_Verifiable.md)
+5. [From Computations to Polynomials](https://z.cash/blog/snark-explain5)
+6. [The Pinocchio Protocol](https://z.cash/blog/snark-explain6)
+7. [Pairings of Elliptic Curves](https://z.cash/blog/snark-explain7)
+
 :book: 到目前为止的描述主要是在"SNARK"如何体现"S"和"N"上 — 如何得到一个简短的, 非交互的, 单一消息证明 — 并没有定位"zk-"(零知识)的部分, 该部分允许证明人保持自己输入数据的隐私性. 事实证明, 在该阶段"zk"的部分可以简单的添加通过"随机移位"初始的多项式并且该多项式任能够满足恒等式成立.
 
 为了解释zk-SNARK我们需要先阐释一些基本的组件:
 
 1. [同态隐藏(Homomorphic Hidings)](./Homomorphic_Hidings.md)
 2. [多项式的盲估计(Blind Evaluation of Polynomials)](./Blind_Evaluation_of_Polynomials.md)
-3. [系数测试和假设知识](./The_Knowledge_of_Coefficient_Test_and_Assumption.md)
+3. [系数测试和假设知识(The Knowledge of Coefficient Test and Assumption)](./The_Knowledge_of_Coefficient_Test_and_Assumption.md)
+4. [如何构建多项式盲估计的验证(How to make Blind Evaluation of Polynomials Verifiable)](./How_to_make_Blind_Evaluation_of_Polynomials_Verifiable.md)
+5. [从计算到多项式(From Computations to Polynomials)](./From_Computations_to_Polynomials.md)
+6. [匹诺曹协议(The Pinocchio Protocol)](./The_Pinocchio_Protocol.md)
 

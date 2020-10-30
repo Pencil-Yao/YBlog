@@ -69,7 +69,7 @@ Note that, as only hidings were sent, neither Alice learned ss [[2\]](https://el
 :book: 使用同态隐藏, 我们能够执行以下估计:
 
 1. Bob发送Alice隐藏值: E(1),E(s),…,E(sd).
-2. Alice从第一步中计算E(P(s)), 然后发送E(P(s))给Bob. (Alice能够做到因为E具备现行组合, 而P(s)正是1,s,…,s^d的线性组合.)
+2. Alice从第一步中计算E(P(s)), 然后发送E(P(s))给Bob. (Alice能够做到因为E具备线性组合, 而P(s)正是1,s,…,s^d的线性组合.)
 
 Subsequent posts will go into more detail as to how blind evaluation is used in SNARKs. The rough intuition is that the verifier has a “correct” polynomial in mind, and wishes to check the prover knows it. Making the prover blindly evaluate their polynomial at a random point not known to them, ensures the prover will give the wrong answer with high probability if their polynomial is not the correct one. This, in turn, relies on the Schwartz-Zippel Lemma stating that “different polynomials are different at most points”.
 
