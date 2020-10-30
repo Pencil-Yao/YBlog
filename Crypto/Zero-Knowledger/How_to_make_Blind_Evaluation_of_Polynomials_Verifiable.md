@@ -1,0 +1,57 @@
+该repository作为本人读书笔记, 记录知识的获取, 以blog的形式记录下来. 该文库我会不断更新, 如果喜欢的话麻烦点一下`star`. 
+
+# How to make Blind Evaluation of Polynomials Verifiable
+
+[<<part III](./The_Knowledge_of_Coefficient_Test_and_Assumption.md)
+
+## An Extended KCA
+
+More generally, Alice can take any *linear combination* of the given $d$ pairs – that is choose any ![](https://latex.codecogs.com/gif.latex?c_1,\ldots,c_d\in\mathbb{F}_p) and define ![](https://latex.codecogs.com/gif.latex?(a',b')=(\sum_{i=1}^d&space;c_i&space;a_i,\sum_{i=1}^d&space;c_ib_i)).
+
+:book: 通常情况, Alice能够对提供的 $d$ 对组合进行线性组合, 选择合![](https://latex.codecogs.com/gif.latex?c_1,\ldots,c_d\in\mathbb{F}_p)适的定义为:![](https://latex.codecogs.com/gif.latex?(a',b')=(\sum_{i=1}^d&space;c_i&space;a_i,\sum_{i=1}^d&space;c_ib_i)) .
+
+Note that, if Alice uses this strategy to generate her ![](https://latex.codecogs.com/gif.latex?\alpha)-pair she will know some linear relation between ![](https://latex.codecogs.com/gif.latex?a') and ![](https://latex.codecogs.com/gif.latex?a_1,\ldots,a_d); that is, she knows ![](https://latex.codecogs.com/gif.latex?c_1,\ldots,c_d) such that ![](https://latex.codecogs.com/gif.latex?a'=\sum_{i=1}^d c_i\cdot a_i).
+
+:book: 现在, 如果 Alice 使用以上策略来产生 ![](https://latex.codecogs.com/gif.latex?\alpha)-pair, 只有她知道 ![](https://latex.codecogs.com/gif.latex?a') 与  ![](https://latex.codecogs.com/gif.latex?a_1,\ldots,a_d) 之间的线性关系; 也就是她知道 ![](https://latex.codecogs.com/gif.latex?c_1,\ldots,c_d) 满足该情况 ![](https://latex.codecogs.com/gif.latex?a'=\sum_{i=1}^d c_i\cdot a_i). 
+
+The extended KCA states, essentially, that this is the only way Alice can generate an ![](https://latex.codecogs.com/gif.latex?\alpha)-pair; that is, whenever she succeeds, she will know such a linear relation between ![](https://latex.codecogs.com/gif.latex?a') and ![](https://latex.codecogs.com/gif.latex?a_1,\ldots,a_d). More formally, suppose that ![](https://latex.codecogs.com/gif.latex?G) is a group of size ![](https://latex.codecogs.com/gif.latex?p) with generator ![](https://latex.codecogs.com/gif.latex?g) written additively as in Part III. The *d-power Knowledge of Coefficient Assumption* (d-KCA) [[1]](#[1]) in ![](https://latex.codecogs.com/gif.latex?G) is as follows:
+
+:book: 扩展KCA的状态, 本质上说, 这是 Alice 产生 ![](https://latex.codecogs.com/gif.latex?\alpha)-pair 的唯一途径; 也正是, 无论何时 Alice 成功了, 她将会知道 ![](https://latex.codecogs.com/gif.latex?a') 和 ![](https://latex.codecogs.com/gif.latex?a_1,\ldots,a_d) 的线性组合. 更正式的, 假设 ![](https://latex.codecogs.com/gif.latex?G) 域是大小为 ![](https://latex.codecogs.com/gif.latex?p) 以生产者 ![](https://latex.codecogs.com/gif.latex?g) 的组合. 在 ![](https://latex.codecogs.com/gif.latex?G) 域 *d* 幂的系数知识假设(d-KCA)[[1]](#[1])如下表示:
+
+**d-KCA**: *Suppose Bob chooses random* ![](https://latex.codecogs.com/gif.latex?\alpha\in\mathbb{F}_p^*) *and* ![](https://latex.codecogs.com/gif.latex?s\in\mathbb{F}_p), *and sends to Alice the* ![](https://latex.codecogs.com/gif.latex?\alpha)-pairs ![](https://latex.codecogs.com/gif.latex?(g,\alpha\cdot g), (s\cdot g,\alpha s\cdot g),\ldots,(s^d\cdot g,\alpha s^d\cdot g)). *Suppose that Alice then outputs another* ![](https://latex.codecogs.com/gif.latex?\alpha)-pair ![](https://latex.codecogs.com/gif.latex?(a', b')). *Then, except with negligible probability, Alice knows* ![](https://latex.codecogs.com/gif.latex?c_0,\ldots,c_d\in\mathbb{F}_p) *such that* ![](https://latex.codecogs.com/gif.latex?\sum_{i=0}^d c_i s^i\cdot g = a').
+
+:book: d-KCA: 假设 *Bob* 选择随机 ![](https://latex.codecogs.com/gif.latex?\alpha\in\mathbb{F}_p^*) 和 ![](https://latex.codecogs.com/gif.latex?s\in\mathbb{F}_p), 然后发送给 alice ![](https://latex.codecogs.com/gif.latex?\alpha)-pairs ![](https://latex.codecogs.com/gif.latex?(g,\alpha\cdot g), (s\cdot g,\alpha s\cdot g),\ldots,(s^d\cdot g,\alpha s^d\cdot g)). 假设 Alice 然后输出 ![](https://latex.codecogs.com/gif.latex?\alpha)-pair ![](https://latex.codecogs.com/gif.latex?(a', b')). 那么, 很小的可能性, Alice 能够知道 ![](https://latex.codecogs.com/gif.latex?c_0,\ldots,c_d\in\mathbb{F}_p)满足 ![](https://latex.codecogs.com/gif.latex?\sum_{i=0}^d c_i s^i\cdot g = a').
+
+Note that in the d-KCA Bob does not send an arbitrary set of ![](https://latex.codecogs.com/gif.latex?\alpha)-pairs, but one with a certain “polynomial structure”. This will be useful in the protocol below.
+
+:book: 注意到在d-KCA中Bob没有发送 ![](https://latex.codecogs.com/gif.latex?\alpha)-pairs 的任意集合, 而是一个有一定的多项式结果的集合. 这在之后的协议中有很大的作用.
+
+## The Verifiable Blind Evaluation Protocol
+
+Assume that our [HH](./Homomorphic_Hidings.md) is the mapping ![](https://latex.codecogs.com/gif.latex?E(x)=x\cdot g) for a generator ![](https://latex.codecogs.com/gif.latex?g) of ![](https://latex.codecogs.com/gif.latex?G) as above.
+
+1. Bob chooses a random ![](https://latex.codecogs.com/gif.latex?\alpha\in\mathbb{F}_p^*), and sends to Alice the hidings ![](https://latex.codecogs.com/gif.latex?g,s\cdot g,\ldots,s^d\cdot g) (of ![](https://latex.codecogs.com/gif.latex?1,s,\ldots,s^d)) and also the hidings ![](https://latex.codecogs.com/gif.latex?\alpha\cdot g,\alpha s \cdot g,\ldots,\alpha s^d\cdot g) (of ![](https://latex.codecogs.com/gif.latex?\alpha,\alpha s,\ldots,\alpha s^d)).
+2. Alice computes ![](https://latex.codecogs.com/gif.latex?a=P(s)\cdot g) and ![](https://latex.codecogs.com/gif.latex?b=\alpha P(s)\cdot g) using the elements sent in the first step, and sends both to Bob.
+3. Bob checks that ![](https://latex.codecogs.com/gif.latex?b=\alpha \cdot a), and accepts if and only if this equality holds.
+
+:book: 假设 [HH](./Homomorphic_Hidings.md) 是 ![](https://latex.codecogs.com/gif.latex?G) 中的生产者 ![](https://latex.codecogs.com/gif.latex?g) 的映射关系 ![](https://latex.codecogs.com/gif.latex?E(x)=x\cdot g).
+
+1. Bob 选择一个随机数 ![](https://latex.codecogs.com/gif.latex?\alpha\in\mathbb{F}_p^*), 然后发送给 Alice 隐藏数据 ![](https://latex.codecogs.com/gif.latex?g,s\cdot g,\ldots,s^d\cdot g) (of ![](https://latex.codecogs.com/gif.latex?1,s,\ldots,s^d))  以及 ![](https://latex.codecogs.com/gif.latex?\alpha\cdot g,\alpha s \cdot g,\ldots,\alpha s^d\cdot g) (of ![](https://latex.codecogs.com/gif.latex?\alpha,\alpha s,\ldots,\alpha s^d)).
+2. Alice 计算 ![](https://latex.codecogs.com/gif.latex?a=P(s)\cdot g) 和 ![](https://latex.codecogs.com/gif.latex?b=\alpha P(s)\cdot g) 使用 Bob 在步骤 1 提供的参数, 然后发送给 Bob.
+3. Bob 检查 ![](https://latex.codecogs.com/gif.latex?b=\alpha \cdot a), 并且仅当等式成立的时候才接受 Alice 提供的值.
+
+First, note that given the coefficients of ![](https://latex.codecogs.com/gif.latex?P), ![](https://latex.codecogs.com/gif.latex?P(s)\cdot g) is a linear combination of ![](https://latex.codecogs.com/gif.latex?g,s\cdot g,\ldots,s^d\cdot g); and ![](https://latex.codecogs.com/gif.latex?\alpha P(s)\cdot g) is a linear combination of ![](https://latex.codecogs.com/gif.latex?\alpha\cdot g,\alpha s \cdot g,\ldots,\alpha s^d\cdot g). Thus, similarly to the protocol of Part II, Alice can indeed compute these values from Bob’s messages for a polynomial ![](https://latex.codecogs.com/gif.latex?P) that she knows.
+
+:book: 首先, 注意到提供的系数 ![](https://latex.codecogs.com/gif.latex?P),  ![](https://latex.codecogs.com/gif.latex?P(s)\cdot g) 是 ![](https://latex.codecogs.com/gif.latex?g,s\cdot g,\ldots,s^d\cdot g) 的线性组合; 而且 ![](https://latex.codecogs.com/gif.latex?\alpha P(s)\cdot g) 是 ![](https://latex.codecogs.com/gif.latex?\alpha\cdot g,\alpha s \cdot g,\ldots,\alpha s^d\cdot g) 的线性组合. 因此, 与协议 II 相似的, Alice 确实能够用她所知的多项式 ![](https://latex.codecogs.com/gif.latex?P) 计算 Bob 发送给她的值.
+
+Second, by the d-KCA if Alice sends ![](https://latex.codecogs.com/gif.latex?a, b) such that ![](https://latex.codecogs.com/gif.latex?b=\alpha \cdot a) then almost surely she knows ![](https://latex.codecogs.com/gif.latex?c_0,\ldots,c_d\in\mathbb{F}_p) such that ![](https://latex.codecogs.com/gif.latex?a=\sum_{i=0}^d c_is^i\cdot g). In that case, ![](https://latex.codecogs.com/gif.latex?a=P(s)\cdot g) for the polynomial ![](https://latex.codecogs.com/gif.latex?P(X)=\sum_{i=0}^d c_i\cdot X^i) known to Alice. In other words, the probability that Bob accepts in Step 3 while at the same time Alice does not know such a ![](https://latex.codecogs.com/gif.latex?P) is negligible.
+
+:book: 其次, 根据 d-KCA Alice 发送 ![](https://latex.codecogs.com/gif.latex?a, b) 满足 ![](https://latex.codecogs.com/gif.latex?b=\alpha \cdot a) 那么总可以确认她知道 ![](https://latex.codecogs.com/gif.latex?c_0,\ldots,c_d\in\mathbb{F}_p) 满足 ![](https://latex.codecogs.com/gif.latex?a=\sum_{i=0}^d c_is^i\cdot g). 在该请款下, ![](https://latex.codecogs.com/gif.latex?a=P(s)\cdot g) 对于多项式 ![](https://latex.codecogs.com/gif.latex?P(X)=\sum_{i=0}^d c_i\cdot X^i) 是对 Alice 知道的. 因此, Bob 在通过第 3 步检查并且 Alice 不知道多项式 ![](https://latex.codecogs.com/gif.latex?P) 的概率是可以忽略的.
+
+To summarize, using the d-KCA we’ve developed a protocol for verifiable blind evaluation of polynomials. In the next posts, we will see how this building block comes to play in SNARK constructions.
+
+:book: 总结, 使用 d-KCA 我们可以改进验证多项式盲估计的协议. 在下一篇文章中, 我们将看到此构造块如何在SNARK构造中发挥作用.
+
+## Appendix
+
+##### [1] The d-KCA was introduced in a [paper](http://www0.cs.ucl.ac.uk/staff/J.Groth/ShortNIZK.pdf) of Jens Groth.
