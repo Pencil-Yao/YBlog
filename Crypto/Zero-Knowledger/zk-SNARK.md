@@ -30,10 +30,10 @@ The description so far has mainly addressed how to get the S and N in “SNARKs�
 
 For a step-by-step, in-depth explanation of key concepts behind zk-SNARKs in Zcash, see our SNARKs Explainer series with posts on:
 
-1. [Homomorphic Hiding](./Homomorphic_Hidings.md)
-2. [Blind Evaluation of Polynomials](./Blind_Evaluation_of_Polynomials.md)
-3. [The Knowledge of Coefficient Test and Assumption](./The_Knowledge_of_Coefficient_Test_and_Assumption.md)
-4. [How to make Blind Evaluation of Polynomials Verifiable](./How_to_make_Blind_Evaluation_of_Polynomials_Verifiable.md)
+1. [Homomorphic Hiding](https://electriccoin.co/blog/snark-explain1/)
+2. [Blind Evaluation of Polynomials](https://electriccoin.co/blog/snark-explain2/)
+3. [The Knowledge of Coefficient Test and Assumption](https://electriccoin.co/blog/snark-explain3/)
+4. [How to make Blind Evaluation of Polynomials Verifiable](https://electriccoin.co/blog/snark-explain4/)
 5. [From Computations to Polynomials](https://z.cash/blog/snark-explain5)
 6. [The Pinocchio Protocol](https://z.cash/blog/snark-explain6)
 7. [Pairings of Elliptic Curves](https://z.cash/blog/snark-explain7)
@@ -42,10 +42,11 @@ For a step-by-step, in-depth explanation of key concepts behind zk-SNARKs in Zca
 
 为了解释zk-SNARK我们需要先阐释一些基本的组件:
 
-1. [同态隐藏(Homomorphic Hidings)](./Homomorphic_Hidings.md)
-2. [多项式的盲估计(Blind Evaluation of Polynomials)](./Blind_Evaluation_of_Polynomials.md)
-3. [系数测试和假设知识(The Knowledge of Coefficient Test and Assumption)](./The_Knowledge_of_Coefficient_Test_and_Assumption.md)
-4. [如何构建多项式盲估计的验证(How to make Blind Evaluation of Polynomials Verifiable)](./How_to_make_Blind_Evaluation_of_Polynomials_Verifiable.md)
-5. [从计算到多项式(From Computations to Polynomials)](./From_Computations_to_Polynomials.md)
-6. [匹诺曹协议(The Pinocchio Protocol)](./The_Pinocchio_Protocol.md)
+1. [同态隐藏(Homomorphic Hidings)](./1.Homomorphic_Hidings.md)
+2. [多项式的盲估计(Blind Evaluation of Polynomials)](./2.Blind_Evaluation_of_Polynomials.md)
+3. [系数测试和假设知识(The Knowledge of Coefficient Test and Assumption)](./3.The_Knowledge_of_Coefficient_Test_and_Assumption.md)
+4. [如何构建多项式盲估计的验证(How to make Blind Evaluation of Polynomials Verifiable)](./4.How_to_make_Blind_Evaluation_of_Polynomials_Verifiable.md)
+5. [从计算到多项式(From Computations to Polynomials)](./5.From_Computations_to_Polynomials.md)
+6. [匹诺曹协议(The Pinocchio Protocol)](./6.The_Pinocchio_Protocol.md)
+7. [椭圆曲线对(Pairings of Elliptic Curves)](./7.Pairings_of_Elliptic_Curves.md)
 
