@@ -50,3 +50,82 @@ For a step-by-step, in-depth explanation of key concepts behind zk-SNARKs in Zca
 6. [匹诺曹协议(The Pinocchio Protocol)](./6.The_Pinocchio_Protocol.md)
 7. [椭圆曲线对(Pairings of Elliptic Curves)](./7.Pairings_of_Elliptic_Curves.md)
 
+Zcash uses [bellman](https://github.com/zcash/librustzcash/tree/master/bellman), a Rust-language library for zk-SNARKs. Before the Sapling upgrade, Zcash used a fork of the C++ library, [libsnark](https://github.com/scipr-lab/libsnark). For a deeper dive into the protocols used for Zcash’s zk-SNARKs, refer to the paper on the [Pinocchio protocol](https://eprint.iacr.org/2013/279.pdf), which was used until the Sapling upgrade, and [Jens Groth’s zk-SNARK](https://eprint.iacr.org/2016/260.pdf) which is used currently.
+
+:book: Zcass 使用 bellman, 一个 rust 版的 zk-SNARKs 实现库. 在 Sapling 升级之前, Zcash  使用一个 C++ 实现库, [libsnark](https://github.com/scipr-lab/libsnark). 想要更深入的挖掘 Zcash's zk-SNARKs 协议, 参看论文 [Pinocchio protocol](https://eprint.iacr.org/2013/279.pdf), 这个是 Sapling 升级之前使用的, 当前参考的论文是 [Jens Groth’s zk-SNARK](https://eprint.iacr.org/2016/260.pdf).
+
+## How zk-SNARKs are applied to create a shielded transaction
+
+In Bitcoin, transactions are validated by linking the sender address, receiver address, and input and output values on the public blockchain. Zcash uses zk-SNARKs to prove that the conditions for a valid transaction have been satisfied without revealing any crucial information about the addresses or values involved. The sender of a shielded transaction constructs a proof to show that, with high probability: 
+
+- the input values sum to the output values for each shielded transfer.
+- the sender proves that they have the private spending keys of the input notes, giving them the authority to spend.
+- The private spending keys of the input notes are cryptographically linked to a signature over the whole transaction, in such a way that the transaction cannot be modified by a party who did not know these private keys.
+
+:book: 在比特币中, 交易的通过检查发送地址, 接收地址, 以及公链中输入输出值的检查来验证交易. Zcash 使用 zk-SNARKs 来满足在完全不泄露任何重要信息(交易双方的地址, 交易数目)的情况下来验证交易的有效性. 该笔隐藏交易的发送这通过构建证明来实现此特性, 在高概率的情况下:
+
+* 输入值对于每一个屏蔽交易都进行一次输出值求和.
+* 交易发送者证明他们有交易输入金额的私人钥匙,  这个钥匙给与他们去使用这笔钱的权利.
+* 这个输入金额的私钥在这个交易中与一个签名相关联, 在这种情况下这笔交易不能被不知道这个私钥的任何一方进行修改.
+
+In addition, shielded transactions must satisfy some other conditions that are described below.
+
+:book: 另外, 隐藏交易必须满足其他下述条件.
+
+Bitcoin tracks unspent transaction outputs (UTXOs) to determine what transactions are spendable. In Zcash, the shielded equivalent of a UTXO is called a “commitment”, and spending a commitment involves revealing a “nullifier”. Zcash nodes keep lists of all the commitments that have been created, and all the nullifiers that have been revealed. Commitments and nullifiers are stored as hashes, to avoid disclosing any information about the commitments, or which nullifiers relate to which commitments.
+
+:book: 比特币跟踪 UTXO 来决定哪一笔余额被花费了. 在 Zcash中, 隐藏交易等价于 UTXO 并被命名为 "commitment", 并且花费这个 commitment 需要揭示一个 "nullifier". Zcash 节点保留所有被创建的 commitment, 以及所有揭示的 nullifiers. Commitments 和 nullifiers 以 hashes 方式存储, 以避免泄露关于 commitment 相关的任何信息, 包括哪个 nullifiers 对应哪个 Commitments.
+
+For each new note created by a shielded payment, a commitment is published which consists of a hash of: the address to which the note was sent, the amount being sent, a number “rho” which is unique to this note (later used to derive the nullifier), and a random nonce.
+
+*Commitment = HASH(recipient address, amount, rho, r)*
+
+:book: 对于隐藏交易产生的每一笔记录, 每一个 commitment 的 hash 是由: 交易方地址, 交易花费数量, "rho"(一个独一无二的记录, 之后用于获得nullifier) 和 一个随机数 nonce 这些信息杂凑获得.
+
+*Commitment = HASH(recipient address, amount, rho, r)*
+
+When a shielded transaction is spent, the sender uses their spending key to publish a nullifier which is the hash of the secret unique number (“rho”) from an existing commitment that has not been spent, and provides a zero-knowledge proof demonstrating that they are authorized to spend it. This hash must not already be in the set of nullifiers tracking spent transactions kept by every node in the blockchain.
+
+*Nullifier = HASH(spending key, rho)*
+
+:book: 当一笔隐藏交易被话费掉的时候, 发送方使用他的话费钥匙来公开一个 nullifier(正是未花费且存在 commitment 中的独一无二值 rho, 再加上一个可以证明发送者有权对其进行花费的零知识证明). 这个 hash 必须不能已经出现在链上每个节点已记录的 nullifiers 跟踪消费交易的集合中.
+
+*Nullifier = HASH(spending key, rho)*
+
+The zero-knowledge proof for a shielded transaction verifies that, in addition to the conditions listed above, the following assertions are also true:
+
+- For each input note, a revealed commitment exists.
+- The nullifiers and note commitments are computed correctly.
+- It is infeasible for the nullifier of an output note to collide with the nullifier of any other note.
+
+:book: 对于隐藏交易的零知识证明已证明了, 不止以上所列出的内容, 以下特性也是正确的：
+
+* 对于每一条记录, 都存在一个已揭示的 commitment.
+* 计算 nullifiers 和 commitments 是正确的.
+* 一条记录的 nullifier 与其他记录的 nullifier 发生碰撞是不可能的.
+
+In addition to the spending keys used to control addresses, Zcash uses a set of proving and verifying keys to create and check proofs. These keys are generated in the public parameter ceremony discussed above, and shared among all participants in the Zcash network. For each shielded transaction, the sender uses their proving key to generate a proof that their inputs are valid. Miners check that the shielded transaction follows consensus rules by checking the prover’s computation with the verifying key. The way that Zcash’s proof generation is designed requires the prover to do more work up-front, but it simplifies verifying, so that the major computational work is offloaded to the creator of the transaction (this is why creating a shielded Zcash transaction can take several seconds, while verifying that a transaction is valid only takes milliseconds).
+
+:book: 除了用于控制地址的私钥外, Zcash 使用一套证明与验证密钥来创建和校验证明. 这些私钥是由之前所述的公共参数所产生, 并且在整个 Zcash 网络中同步共享. 对于每一笔隐藏交易, 发送者使用他们的证明私钥来生成一个证明表明交易的输入是有效的. 矿工检查隐藏交易符合共识规则使用验证私钥通过证明人的计算. Zcash证明生成的方式被设计为需要证明人作更多的前置工作, 但是这个方式简化了验证, 所以主要的计算工作的负担都转移给了交易的创建者(这就是为什么Zcash创建一笔隐藏交易需要花费数秒时间, 然而证明一笔交易有效仅需要数毫秒).
+
+The privacy of Zcash’s shielded transactions relies upon standard, tried-and-tested cryptography (hash functions and stream ciphers), but it’s the addition of zk-SNARKs, applied with the system of commitments and nullifiers, that allows senders and receivers of shielded transactions to prove that encrypted transactions are valid. Other methods of providing privacy for cryptocurrencies rely upon obscuring the linkage between transactions, but the fact that Zcash transactions can be stored on the blockchain fully encrypted opens up [new possibilities for cryptocurrency applications](https://z.cash/blog/encrypted-memo-field). Encrypted transactions allow parties to enjoy the benefits of public blockchains, while still protecting their privacy. Planned future upgrades will allow users to selectively disclose information about shielded transactions at their discretion. See our [Near Future of Zcash](https://z.cash/blog/the-near-future-of-zcash) blog post on future plans for Zcash.
+
+:book: Zcash 的隐藏交易的隐私性依赖 hash 函数和流加密, 但正是加入了 zk-SNARKs, 应用了 commitments 和 nullifiers 系统, 使得允许隐藏交易的发送者和接收者证明这笔加密交易是有效的. 为加密货币提供隐私的其他方法依赖于掩盖交易之间的联系, 但事实上, Zcash交易可以完全加密地存储在区块链上, 这为[加密货币应用提供了新的可能性](https://z.cash/blog/encrypted-memo-field). 加密交易允许参与者享受公链的优势, 并且同时保证私密性. 未来的升级计划允许用户酌情选择性的披露隐藏交易的信息.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
