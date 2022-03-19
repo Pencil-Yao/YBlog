@@ -109,7 +109,7 @@ Here, an investor deposits both ![](https://latex.codecogs.com/gif.latex?{\bigtr
 
 **Theorem 1.** Let ![](https://latex.codecogs.com/gif.latex?(e,t,l)\overset{_{addLiquidity_{spec}({\bigtriangleup}e})}{\rightarrow}(e',t',l')). Let ![](https://latex.codecogs.com/gif.latex?k=e{\times}t) and ![](https://latex.codecogs.com/gif.latex?{k}'={e}'{\times}{t}'). Then, we have the following:
 
-1 ![](https://latex.codecogs.com/gif.latex?e:t:l=e':t':l')
+1 ![](https://latex.codecogs.com/gif.latex?(e:t:l)=({e}':{t}':{l}'))
 2 ![](https://latex.codecogs.com/gif.latex?k<k')
 3 ![](https://latex.codecogs.com/gif.latex?\frac{k'}{k}=(\frac{l'}{l})^{2})
 
@@ -119,7 +119,7 @@ Here, an investor deposits both ![](https://latex.codecogs.com/gif.latex?{\bigtr
 
 
 
-1 ![](https://latex.codecogs.com/gif.latex?e:t:l=e':t':l')
+1 ![](https://latex.codecogs.com/gif.latex?(e:t:l)=({e}':{t}':{l}'))
 2 ![](https://latex.codecogs.com/gif.latex?k<k')
 3 ![](https://latex.codecogs.com/gif.latex?\frac{k'}{k}=(\frac{l'}{l})^{2})
 
@@ -127,7 +127,7 @@ Here, an investor deposits both ![](https://latex.codecogs.com/gif.latex?{\bigtr
 
 **Definition 2.** **addLiquidity<sub>code</sub>** takes as input an integer ![](https://latex.codecogs.com/gif.latex?{\bigtriangleup}e>0{\in}Z) and updates the state as follows:
 
-![](https://latex.codecogs.com/gif.latex?(e,t,l){\in}Z^{3}\overset{_{addLiquidity_{code}({\bigtriangleup}e})}{\rightarrow}(e'',t'',l''){\in}Z^{3})
+![](https://latex.codecogs.com/gif.latex?(e,t,l){\in}Z^{3}\overset{_{addLiquidity_{code}({\bigtriangleup}e})}{\rightarrow}({e}'',{t}'',{l}''){\in}Z^{3})
 
 ![](https://latex.codecogs.com/gif.latex?e''=e+{\Delta}e=(1+\alpha)e)
 
@@ -147,7 +147,47 @@ and ![](https://latex.codecogs.com/gif.latex?\alpha=\frac{{\bigtriangleup}e}{e})
 
 其中 ![](https://latex.codecogs.com/gif.latex?\alpha=\frac{{\bigtriangleup}e}{e}).
 
+Theorem 2. Let ![](https://latex.codecogs.com/gif.latex?(e,t,l)\overset{addLiquidity_{spec}({\Delta}e)}{\rightarrow}({e}',{t}',{l}')). Let ![](https://latex.codecogs.com/gif.latex?(e,t,l)\overset{addLiquidity_{code}({\Delta}e)}{\rightarrow}({e}'',{t}'',{l}'')). Let ![](https://latex.codecogs.com/gif.latex?k=e{\times}t), ![](https://latex.codecogs.com/gif.latex?{k}'={e}'{\times}{t}') and ![](https://latex.codecogs.com/gif.latex?({k}''={e}''{\times}{t}'')). The, we have:
 
+![](https://latex.codecogs.com/gif.latex?e''=e{'})
+
+![](https://latex.codecogs.com/gif.latex?t''=\left\lfloor{t'}\right\rfloor+1)
+
+![](https://latex.codecogs.com/gif.latex?l''=\left\lfloor{l'}\right\rfloor)
+
+and
+
+1. ![](https://latex.codecogs.com/gif.latex?e<e{'}=e{''})
+2. ![](https://latex.codecogs.com/gif.latex?t<t'<t''{\le}t'+1)
+3. ![](https://latex.codecogs.com/gif.latex?l'-1<l''{\le}l')
+4. ![](https://latex.codecogs.com/gif.latex?k<k'<k'')
+5. ![](https://latex.codecogs.com/gif.latex?(\frac{l''}{l})^{2}<\frac{k''}{k})
+
+:book: 定理2. 使 ![](https://latex.codecogs.com/gif.latex?(e,t,l)\overset{addLiquidity_{spec}({\Delta}e)}{\rightarrow}({e}',{t}',{l}')). 使 ![](https://latex.codecogs.com/gif.latex?(e,t,l)\overset{addLiquidity_{code}({\Delta}e)}{\rightarrow}({e}'',{t}'',{l}'')). 使  ![](https://latex.codecogs.com/gif.latex?k=e{\times}t), ![](https://latex.codecogs.com/gif.latex?{k}'={e}'{\times}{t}') 和 ![](https://latex.codecogs.com/gif.latex?({k}''={e}''{\times}{t}'')). 那么我们可以得到：
+
+
+
+![](https://latex.codecogs.com/gif.latex?t''=\left\lfloor{t'}\right\rfloor+1)
+
+![](https://latex.codecogs.com/gif.latex?l''=\left\lfloor{l'}\right\rfloor)
+
+以及
+
+1. ![](https://latex.codecogs.com/gif.latex?e<e{'}=e{''})
+2. ![](https://latex.codecogs.com/gif.latex?t<t'<t''{\le}t'+1)
+3. ![](https://latex.codecogs.com/gif.latex?l'-1<l''{\le}l')
+4. ![](https://latex.codecogs.com/gif.latex?k<k'<k'')
+5. ![](https://latex.codecogs.com/gif.latex?(\frac{l''}{l})^{2}<\frac{k''}{k})
+
+### 2.2 Burning Liquidity
+
+#### 2.2.1 removeLiquidity<sub>spec</sub>
+
+取出流动性本质上来说和注入流动性刚好相反，我这里就不在赘述了，原文写的实在有些啰嗦了。
+
+### 总结
+
+核心思想是 xy=k，然后因为计算机是处理整数的，本质上币也是整数的，因此就不得不处理存在小数的情况，虽然论文写得很复杂，但本质上来讲，在增加流动性方面大家只要抓住 eth 本位原则，也就是 eth 肯定是整数，而由 token 来补足小数造成的损失。而减少流动性方面是以 l 为本位的，那么 eth 和 token 的小数损失由用户承担。
 
 
 
