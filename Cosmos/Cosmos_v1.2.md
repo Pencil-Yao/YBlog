@@ -27,5 +27,7 @@ Interchain Allocator: 维持跨链的快速增长将需要新的链上经济协�
 1. Cosmos Hub 通过创建安全的区块空间市场从链间经济活动中收取收入, Interchain Scheduler并收取匹配费用.
 2. 收益是用来驱动长期经济调整和通过Interchain Allocator将有前景的新项目添加到Cosmos Hub’s holdings. 反过来, 这些项目扩大了调度程序的潜在市场.
 
+:bulb: 这就是cosmos v1.2的核心功能, 通过Interchain Scheduler获得MEV收益, 通过Interchain Allocator提高资本利用率, 并还提供验证人服务(这点有点模仿polkadot), cosmos的体系完全有别于polkadot, 很难说真的有项目需要付费使用cosmos验证人为其增加安全性; 因为链级的安全性已经通过tendermint提供了, 而且cosmos生态本来就是主权独立, 这难免让人感觉是在开倒车.
+
 
 
