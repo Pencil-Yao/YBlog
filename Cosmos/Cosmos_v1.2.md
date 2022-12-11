@@ -29,5 +29,8 @@ Interchain Allocator: 维持跨链的快速增长将需要新的链上经济协�
 
 :bulb: 这就是cosmos v1.2的核心功能, 通过Interchain Scheduler获得MEV收益, 通过Interchain Allocator提高资本利用率, 并还提供验证人服务(这点有点模仿polkadot), cosmos的体系完全有别于polkadot, 很难说真的有项目需要付费使用cosmos验证人为其增加安全性; 因为链级的安全性已经通过tendermint提供了, 而且cosmos生态本来就是主权独立, 这难免让人感觉是在开倒车.
 
+The Cosmos Hub is the most secure pillar of the interchain.
 
+:book: Cosmos Hub 是跨链最安全的支柱.
 
+:bulb: 真就没明白文章开头说链间网络实现了, 现在又说cosmos是最安全的跨链支柱? 实在是觉得文章的作者太过于乐观了, 至此笔者认为文章没有太大的翻译价值, 就这场会议吹嘘atom要上1000, 我已感觉到cosmos变得过于浮躁了.
