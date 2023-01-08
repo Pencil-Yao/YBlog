@@ -88,4 +88,22 @@ This means that increasing the number of light nodes performing DAS allows for l
 
 For a block data size of $n^2$ bytes, this means that every light node must download O(n) bytes. Therefore, any improvement in the bandwidth capacity of Celestia light nodes has a quadratic effect on the throughput of Celestia's DA layer.
 
-:book: 
+:book: DAS保证了Celestia实现DA层的扩容. DAS可以在资源首先要的轻节点上实现, 因为每个轻节点只会采样完整块的一小部分数据. 越多的轻节点参与网络, 那么越多的数据他们可以集体下载和存储.
+
+这意味着越多的轻节点执行DAS来允许更大的区块(也就是有更多的交易), 同时仍然保持DAS对资源有限的轻节点仍然适用. 但为了验证区块头, Celetia的轻节点需要下载4k的中间默克尔根.
+
+对于一个具有$n^2$字节的区块来说, 意味着轻节点必须下载O(n)级的字节. 反面来说对于Celestia轻节点的带宽容量提升会对Celetia的DA层吞吐有二次级的提升.
+
+### [Fraud Proofs of Incorrectly Extended Data](https://docs.celestia.org/concepts/how-celestia-works/data-availability-layer/#fraud-proofs-of-incorrectly-extended-data)
+
+The requirement of downloading the 4k intermediate Merkle roots is a consequence of using a 2-dimensional Reed-Solomon encoding scheme. Alternatively, DAS could be designed with a standard (i.e., 1-dimensional) Reed-Solomon encoding, where the original data is split into k chunks and extended with k additional chunks of parity data. Since the block data commitment is the Merkle root of the 2k resulting data chunks, light nodes no longer need to download O(n) bytes to validate block headers.
+
+The downside of the standard Reed-Solomon encoding is dealing with malicious block producers that generate the extended data incorrectly.
+
+This is possible as **Celestia does not require a majority of the consensus (i.e., block producers) to be honest to guarantee data availability.** Thus, if the extended data is invalid, the original data might not be recoverable, even if the light nodes are sampling sufficient unique chunks (i.e., at least k for a standard encoding and k × k for a 2-dimensional encoding).
+
+As a solution, *Fraud Proofs of Incorrectly Generated Extended Data* enable light nodes to reject blocks with invalid extended data. Such proofs require reconstructing the encoding and verifying the mismatch. With standard Reed-Solomon encoding, this entails downloading the original data, i.e., $n^2$ bytes. Contrastingly, with 2-dimensional Reed-Solomon encoding, only O(n) bytes are required as it is sufficient to verify only one row or one column of the extended matrix.
+
+:book: 所需要下载的4k间接默克尔树根是上文提到的Reed-Solomon编码重排的结果. 可选的, DAS能够被设计成标准的(例如1维)Reed-Solomon编码, 其中原始数据被切割成了k个部分和扩展的额外的k部分的奇偶数据. 因此区块数据承诺就是2k部分数据的默克尔根, 轻节点不需要下载O(n)用来验证区块头.
+
+标准的Reed-Solomon编码方式的缺点是要处理不正确地生成扩展数据的恶意节点.
