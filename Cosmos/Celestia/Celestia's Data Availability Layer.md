@@ -1,5 +1,9 @@
 # Celestia's Data Availability Layer
 
+该repository作为本人读书笔记, 记录知识的获取, 以blog的形式记录下来. 该文库我会不断更新, 如果喜欢的话麻烦点一下`star`.
+
+由于文章由markdown的方式编写, 部分链接与图片显示可能存在问题, 大家可以移步到[github源](https://github.com/Pencil-Yao/YBlog/blob/master/excellent_article/Having a safe CEX: proof of solvency and beyond.md)查看.
+
 文章链接: [地址](https://docs.celestia.org/concepts/how-celestia-works/data-availability-layer)
 
 Celestia的数据可用性层(DA)是一个被传的神乎其神的技术, 同时被寄以厚望可能“超越”以太的技术, 现在笔者根据Celtesia的官方文档来一探究尽.
@@ -171,4 +175,13 @@ NMT是一种默克尔数结构叶子节点以命名空间id进行排序, 父hash
 >
 > However, the Celestia App is data-agnostic -- the state machine neither validates nor stores the data that is made available by the Celestia App.
 
-更多的关于Tendermint修改的细节, 请查看一下[ADRs](https://github.com/celestiaorg/celestia-core/tree/v0.34.x-celestia/docs/celestia-architecture).
+更多的关于Tendermint修改的细节, 请查看一下[ADRs](https://github.com/celestiaorg/celestia-core/tree/v0.34.x-celestia/docs/celestia-architecture). 值得注意的是Celestia Core仍然使用tendermint p2p 网络.
+
+类似于Tendermint, Celestia Core也是通过ABCI连接应用层(例如, 状态机), ABCI(Application Blockchain Interface)的[重大发展历程](https://github.com/tendermint/tendermint/tree/master/spec/abci).
+
+Celestia App state machine必须要执行PoS逻辑以及保证DA层的治理.
+
+然而, Celestia App与数据无关--状态机即不会验证也不会存储Celestia App提供的数据.
+
+:bulb: 状态机实质上只会执行Celestia App提供的数据, 并将结果app_hash发送给Celestia Core存储到区块头中.
+
