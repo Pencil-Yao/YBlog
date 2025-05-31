@@ -6,11 +6,11 @@
 
 # 交易对的创建
 
-UniswapV3本身代码量非常庞大, 无论是从toekn端开始亦或者交易端开始难免显得冗长, 本文打算从代码的中端切入, 先来看一下交易对是如何创建的.
+UniswapV3本身代码量非常庞大, 无论是从toekn端开始亦或者交易端开始难免显得冗长, 本文打算从代码的中端切入, 并且已一个个合约如何部署来展开, 先来看一下交易对是如何创建的.
 
 我们来观察一个交易对创建：[Virtual-WETH](https://etherscan.io/tx/0x4b9ae122e5451bfda960cb332fb62b9c6fa6bf72c0da5acef5b194bf3bfd18aa)
 
-调用对象: [Uniswap V3: Positions NFT](0xC36442b4a4522E871399CD717aBDD847Ab11FE88)
+调用对象: [Uniswap V3: Positions NFT](https://etherscan.io/address/0xC36442b4a4522E871399CD717aBDD847Ab11FE88)
 
 这笔交易: 涉及 49,999,999.999999999999880385 virtual (295be96e64066971fe2cc1) 217.859582274229073488 eth (bcf68b7cf12697650)
 
@@ -328,3 +328,8 @@ mint
 ```
 
 可以看到transfer的eth会被wrap称weth, 并注入pool中成为流动性.
+
+## pool合约源码
+
+[在这里](./assert/UniswapV3Pool.zip)
+
