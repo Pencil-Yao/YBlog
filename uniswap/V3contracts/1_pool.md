@@ -103,7 +103,7 @@ createAndInitializePoolIfNecessary
     "address"(token0): "44ff8620b8ca30902395a7bd3f2407e1a091bf73"
   },
   {
-    "address"(token1): "c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+    "address"(token1): "c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" // WETH9
   },
   {
     "uint24"(fee): "2710"
@@ -142,7 +142,7 @@ abstract contract PoolInitializer is IPoolInitializer, PeripheryImmutableState {
 }
 ```
 
-可以看到每个pool是以`token0`, `token1`和`fee`来作为tag, 在这个`UniswapV3Factory`防止重复的. `UniswapV3Factory`是`NonfungiblePositionManager`建立时传入的. 正常逻辑下请求建立的pool是不存在的, 这时`createPool`会创建一个new pool并且该调用会返回pool的地址. 并且会对该pool设置一个初始价格**sqrtPriceX96**(这是价格的开方数, sqrt(price), 而后面的**X96**表示, 这个数后96位位小数, 前64位为整数, 记作**Q64.96**), 这个函数工作完成.
+可以看到每个pool是以`token0`, `token1`和`fee`来作为tag, 在这个`UniswapV3Factory`防止重复的. `UniswapV3Factory`是`NonfungiblePositionManager`建立时传入的. 正常逻辑下请求建立的pool是不存在的, 这时`createPool`会创建一个new pool并且该调用会返回pool的地址. 并且会对该pool设置一个初始价格**sqrtPriceX96**(这是价格的开方数, sqrt(price), 而后面的**X96**表示, 这个数后96位小数, 前64位为整数, 记作**Q64.96**), 这个函数工作完成.
 
 然后是方法而的具体参数:
 

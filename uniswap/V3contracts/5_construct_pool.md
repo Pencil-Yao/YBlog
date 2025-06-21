@@ -9,6 +9,7 @@
 * [pool部署](./1_pool.md)
 * [NFT合约的部署](./2_nft.md)
 * [factory合约的部署](./3_factory+poolDeployer.md)
+* [nftDescriptor合约部署](./4_nftDescriptor.md)
 
 现在让我们来尝试在私有环境上构造uniswap V3的交易对.
 
@@ -34,4 +35,17 @@ remixd -s <path-to-the-shared-folder> -u <remix-ide-instance-URL>
 
 ## 3. 部署合约
 
-完成以上两步之后也会是一件非常容易的事情
+完成以上两步之后部署合约也会是一件非常容易的事情
+
+1. 部署USDC合约
+   * 铸造usdc，可以尽可能多点，小数6位。
+2. 部署WETH9合约
+   * 同样铸造ETH，可以根据账户情况铸造，同样可以多铸造一些。
+3. 部署Factory合约
+4. 部署NftDescriptor合约
+5. 部署NftPositionManager合约
+
+完成以上操作，创建Pool的准备工作都做完了，现在我们真正的创建一个Pool
+
+6. 调用NftPositionManager的createAndInitializePoolIfNecessary
+
