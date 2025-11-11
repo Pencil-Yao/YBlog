@@ -37,15 +37,16 @@ remixd -s <path-to-the-shared-folder> -u <remix-ide-instance-URL>
 
 完成以上两步之后部署合约也会是一件非常容易的事情
 
-1. 部署USDC合约
-   * 铸造usdc，可以尽可能多点，小数6位。
+   * 调用updateMasterMinter, 将自己升级为masterMinter
+   * 调用configureMinter, 调整自己能够mint的数量
+   * 调用mint, 给自己mint一定数量的usdc, 比如 1个小目标
 2. 部署WETH9合约
-   * 同样铸造ETH，可以根据账户情况铸造，同样可以多铸造一些。
+   * 调用deposit方法, 传入2000 eth
 3. 部署Factory合约
 4. 部署NftDescriptor合约
 5. 部署NftPositionManager合约
+6. 对NftPositionManager合约, approve 足够数量的 usdc.
+7. 最后调用创建pool的三个方法: `createAndInitializePoolIfNecessary`, `mint`, `refundETH`
 
-完成以上操作，创建Pool的准备工作都做完了，现在我们真正的创建一个Pool
-
-6. 调用NftPositionManager的createAndInitializePoolIfNecessary
+以上三个方法需要非常合理的编排数据, 和高度对合约的理解能力才能完成 uniswapV3Pool 的创建, 有疑问的话可以好好重温一下[pool部署](./1_pool.md).
 
